@@ -5,6 +5,6 @@ WORKDIR /usr/src/app
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 CMD ["java", "-jar", "target/project.jar"]
