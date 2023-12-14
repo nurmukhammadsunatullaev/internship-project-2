@@ -1,15 +1,15 @@
 version: '3'
 services:
-  postgres:
-    image: 'postgres:latest'
+  rabbitmq:
+    image: rabbitmq:management
     environment:
-      - 'POSTGRES_DB=postgres'
-      - 'POSTGRES_PASSWORD=password'
-      - 'POSTGRES_USER=postgres'
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     ports:
-      - '5432:5432'
+      - "5672:5672" # порт для подключения AMQP
+      - "15672:15672" # порт для веб-интерфейса RabbitMQ (менеджер)
     volumes:
-      - /var/lib/postgresql/data
+      - /var/lib/rabbitmq # сохранение данных RabbitMQ
 
   app:
     build:
@@ -20,9 +20,9 @@ services:
     volumes:
       - /usr/src/app/target
     depends_on:
-      - postgres
+      - rabbitmq
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
